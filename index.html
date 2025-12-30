@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - نظام الطلبات</title>
+    <style>
+        /* گشتگیر */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: url('s2.png'); /* ناوی وێنەکەت */
+            background-color: #1a1a1a; /* ئەگەر وێنەکە نەبوو ئەم ڕەنگە دەردەکەوێت */
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            background-attachment: fixed;
+            animation: ahma 25s ease-in-out infinite;
+            overflow: hidden;
+        }
+
+        @keyframes ahma {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* سندوقی سەرەکی */
+        .saraki {
+            position: relative;
+            width: 380px;
+            padding: 40px;
+            animation: a 4s ease-in-out infinite;
+            border-radius: 20px;
+            backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.6);
+            z-index: 10;
+        }
+
+        @keyframes a {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* کاریگەری درەوشانەوە لەکاتی Hover */
+        .saraki::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100px;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: skewX(-15deg);
+            transition: 0.7s;
+            pointer-events: none;
+        }
+
+        .saraki:hover::before {
+            left: 120%;
+        }
+
+        .saraki h2 {
+            color: aliceblue;
+            text-align: center;
+            font-size: 30px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 40px;
+            text-shadow: 0 5px 8px rgba(0,0,0,0.5);
+        }
+
+        /* گرووپی ئینپوتەکان */
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+            text-align: right;
+        }
+
+        .input-group label {
+            display: block;
+            color: aliceblue;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            color: white;
+            outline: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .input-group input::placeholder {
+            color: rgba(240, 248, 255, 0.6);
+        }
+
+        .input-group input:focus {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        /* تەمەکەری و بیرم بێنەوە */
+        .remember {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+            color: aliceblue;
+            font-size: 14px;
+        }
+
+        .remember input {
+            margin-left: 10px;
+            accent-color: #fff;
+            cursor: pointer;
+        }
+
+
+
+
+        /* دوگمە */
+        button {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 14px;
+            font-size: 17px;
+            font-weight: bold;
+            color: aliceblue;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* نامەی هەڵە */
+        .error-msg {
+            color: #ff4d4d;
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 15px;
+            display: none;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* بەشی خۆتۆمارکردن */
+        .register {
+            text-align: center;
+            font-size: 14px;
+            color: aliceblue;
+            margin-top: 10px;
+        }
+
+        .register a {
+            color: #fff;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="saraki">
+        <h2>تسجيل الدخول</h2>
+        
+        <form id="loginForm">
+            <div class="input-group">
+                <label>اسم المستخدم</label>
+                <input type="text" id="user" placeholder="Username" required>
+            </div>
+            
+            <div class="input-group">
+                <label>كلمة المرور</label>
+                <input type="password" id="pass" placeholder="Password" required>
+            </div>
+            
+            <div class="remember">
+                <input type="checkbox" id="rem">
+                <label for="rem">تذكرني</label>
+            </div>
+
+            <p id="error" class="error-msg">ناوی بەکارهێنەر یان وشەی نهێنی هەڵەیە!</p>
+
+            <button type="submit">دخول</button>
+            
+            <div class="register">
+                <p>ليس لديك حساب؟ <a href="#">اتصل بالمدير</a></p>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').onsubmit = function(e) {
+            e.preventDefault(); // ڕێگری لە Refresh بوون دەکات
+
+            var user = document.getElementById('user').value;
+            var pass = document.getElementById('pass').value;
+
+            // ناوی بەکارهێنەر و پاسۆردەکان
+            var myUsers = {
+                "saman": "123",
+                "sana": "1234"
+            };
+
+            // پشکنین
+            if (myUsers[user] && myUsers[user] === pass) {
+                // ئەگەر ڕاست بوو دەیبات بۆ order.php
+                window.location.href = "order.php";
+            } else {
+                // ئەگەر هەڵە بوو نامەی سوور نیشان دەدات
+                document.getElementById('error').style.display = 'block';
+            }
+        };
+    </script>
+
+</body>
+</html>
