@@ -2,13 +2,12 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>نظام الطلبات الاحترافي</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام الطلبات - نسخة الهاتف</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
-    /* ستایلی سەرەکی بۆ مۆبایل */
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         background: #f4f7f6;
@@ -24,6 +23,7 @@
         border-radius: 12px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     }
+    /* چاککردنی هێدەر بۆ ئەوەی مێژووی تێدا بێت */
     .header-box {
         display: flex;
         justify-content: space-between;
@@ -33,9 +33,8 @@
         margin-bottom: 20px;
     }
     h3 { margin: 0; color: #2c3e50; font-size: 18px; }
-    .top-date { color: #555; font-size: 14px; font-weight: bold; }
+    .date-box { font-size: 14px; color: #555; font-weight: bold; }
     
-    /* زانیاری کڕیار */
     .customer-info-section {
         display: flex;
         flex-direction: column;
@@ -46,18 +45,15 @@
         display: flex;
         flex-direction: column;
     }
-    label { font-weight: 600; margin-bottom: 6px; color: #444; font-size: 14px; text-align: right; }
+    label { font-weight: 600; margin-bottom: 6px; color: #444; font-size: 14px; }
     input, textarea, select {
         padding: 14px;
         border: 1px solid #ccc;
         border-radius: 10px;
         font-size: 16px;
         background: #fafafa;
-        width: 100%;
-        box-sizing: border-box;
     }
 
-    /* زیادکردنی بەرهەم */
     .add-product-box {
         background: #edf2f7;
         padding: 15px;
@@ -75,65 +71,43 @@
         border-radius: 10px; 
         cursor: pointer; 
         font-weight: bold; 
-        font-size: 16px;
     }
 
-    /* خشتەکە */
     .table-wrapper {
-        width: 100%;
         overflow-x: auto;
     }
-    table { 
-        width: 100%; 
-        border-collapse: collapse; 
-        margin-top: 10px; 
-        background: white;
-    }
-    th, td { 
-        padding: 12px 8px; 
-        border: 1px solid #eee; 
-        text-align: center; 
-        font-size: 14px; 
-    }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 300px; }
+    th, td { padding: 12px 8px; border-bottom: 1px solid #eee; text-align: center; font-size: 14px; }
     th { background: #f8f9fa; color: #333; }
     
     .btn-edit { background: #ff9800; color: white; border: none; padding: 8px; border-radius: 6px; }
     .btn-del { background: #f44336; color: white; border: none; padding: 8px; border-radius: 6px; }
 
-    /* دوگمەکانی خوارەوە */
     .action-buttons {
         display: flex;
         flex-direction: column;
         gap: 12px;
         margin-top: 25px;
-        max-width: 100%;
     }
     .btn-pdf { background: #2f855a; color: #fff; padding: 16px; font-size: 16px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
     .btn-reset { background: #a0aec0; color: #fff; padding: 16px; font-size: 16px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
     
-    /* شاردنەوە لە کاتی PDF */
     .no-print { display: none !important; }
-
-    @media print {
-        .main-container { box-shadow: none; border: none; width: 100%; }
-    }
 </style>
 </head>
 <body>
 
 <div class="main-container" id="content-to-export">
     <div class="header-box">
-        <h3>👤 معلومات العميل والطلب</h3>
-        <div class="top-date">التاريخ: <span id="current-date"></span></div>
+        <h3>👤 معلومات العميل</h3>
+        <div class="date-box">التاريخ: <span id="current-date"></span></div>
     </div>
 
     <div class="customer-info-section">
         <div class="info-group">
             <label>اسم العميل</label>
             <input type="text" id="cname" placeholder="أدخل الاسم...">
-
-
-            </div>
+        </div>
         <div class="info-group">
             <label>رقم الهاتف</label>
             <input type="tel" id="cphone" placeholder="07xx xxx xxxx">
@@ -145,6 +119,8 @@
         <div class="info-group">
             <label>حالة الدفع</label>
             <select id="paymentStatus">
+
+
                 <option value="كاش (نقد)">كاش (نقد)</option>
                 <option value="آجل (لم يتم الدفع)">آجل (دين)</option>
                 <option value="واصل (تم الدفع)">واصل</option>
@@ -169,7 +145,7 @@
     </div>
 
     <div class="table-wrapper">
-        <table id="myTable">
+        <table>
             <thead>
                 <tr>
                     <th>ت</th>
@@ -189,9 +165,9 @@
 </div>
 
 <script>
-// دانانی مێژوو بە شێوەیەکی ڕێک
-const dateObj = new Date();
-const formattedDate = dateObj.getDate() + '/' + (dateObj.getMonth() + 1) + '/' + dateObj.getFullYear();
+// مێژووی ئەمرۆ بە شێوەیەکی جێگیر
+const today = new Date();
+const formattedDate = today.getDate() + '/' + (today.getMonth() + 1) + '/' + today.getFullYear();
 document.getElementById('current-date').innerText = formattedDate;
 
 var counter = 1;
@@ -233,24 +209,16 @@ function makePDF(){
     var cname = document.getElementById("cname").value.trim();
     if(cname === "") { alert("يرجى إدخال اسم العميل"); return; }
 
-    // شاردنەوەی دوگمەکان و بەشی زیادکردن
     document.getElementById('input-area').classList.add('no-print');
     document.querySelectorAll('.action-col').forEach(el => el.classList.add('no-print'));
 
     var element = document.getElementById('content-to-export');
     
-    // ڕێکخستنی تایبەت بۆ ئەوەی خشتەکە لە مۆبایل وەک خۆی دەرکەوێت
     var opt = {
         margin: [10, 10, 10, 10],
         filename: 'طلب_' + cname + '.pdf',
-
-
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-            scale: 2, 
-            useCORS: true,
-            windowWidth: 800 // ئەمە وا دەکات خشتەکە وەک کۆمپیوتەر بە ڕێکی ڕەندەر بێت
-        },
+        html2canvas: { scale: 3, useCORS: true },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
