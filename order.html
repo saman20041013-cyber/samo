@@ -15,7 +15,7 @@
         direction: rtl;
     }
     .main-container {
-        max-width: 800px;
+        max-width: 850px;
         margin: auto;
         background: #fff;
         padding: 30px;
@@ -24,14 +24,12 @@
     }
     .header-box {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
+        justify-content: center;
         border-bottom: 2px solid #eee;
         padding-bottom: 10px;
         margin-bottom: 20px;
     }
     h3 { margin: 0; color: #333; }
-    .invoice-num-box { font-weight: bold; font-size: 18px; color: #e74c3c; }
     
     .customer-info-section {
         display: grid;
@@ -63,7 +61,7 @@
         margin-bottom: 30px;
     }
     .add-product-box div { flex: 1; text-align: right; }
-    .btn-add { background: #222; color: #fff; padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+    .btn-add { background: #222; color: #fff; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; height: 45px; }
 
     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
     th, td { padding: 15px; border-bottom: 1px solid #eee; text-align: center; }
@@ -89,7 +87,6 @@
 <div class="main-container" id="content-to-export">
     <div class="header-box">
         <h3>👤 معلومات العميل والطلب</h3>
-        <div class="invoice-num-box">رقم الفاتورة: #<span id="inv-id">1001</span></div>
     </div>
 
     <div class="customer-info-section">
@@ -110,8 +107,6 @@
             <select id="paymentStatus">
                 <option value="كاش (نقد)">كاش (نقد)</option>
                 <option value="آجل (لم يتم الدفع)">آجل (دين)</option>
-
-
                 <option value="واصل (تم الدفع)">واصل</option>
             </select>
         </div>
@@ -122,15 +117,19 @@
     </div>
 
     <div class="add-product-box" id="input-area">
-        <div>
+        <div style="flex: 2;">
             <label>كود المنتج</label>
-            <input type="text" id="code">
+            <input type="text" id="code" style="width: 100%; box-sizing: border-box;">
         </div>
-        <div>
+        <div style="flex: 1;">
             <label>الكمية</label>
-            <input type="number" id="qty">
+            <input type="number" id="qty" style="width: 100%; box-sizing: border-box;">
         </div>
-        <button type="button" class="btn-add" onclick="addRow()">➕ إضافة للقائمة</button>
+        <div style="flex: 1;">
+            <label>داشكاندن</label>
+            <input type="text" id="discount" placeholder="0" style="width: 100%; box-sizing: border-box;">
+        </div>
+        <button type="button" class="btn-add" onclick="addRow()">➕ إضافة</button>
     </div>
 
     <table>
@@ -139,6 +138,7 @@
                 <th>التسلسل</th>
                 <th>كود المنتج</th>
                 <th>الكمية</th>
+                <th>داشكاندن</th>
                 <th class="action-col">الإجراءات</th>
             </tr>
         </thead>
@@ -150,16 +150,12 @@
     </div>
 </div>
 
-<div class="action-buttons" style="max-width: 800px; margin: auto;">
+<div class="action-buttons" style="max-width: 850px; margin: auto;">
     <button type="button" class="btn-pdf" onclick="makePDF()">📄 تحميل الفاتورة (PDF)</button>
     <button type="button" class="btn-reset" onclick="resetForm()">🔄 مسح الكل</button>
 </div>
 
 <script>
-// تهيئة رقم الفاتورة من الذاكرة المحلية
-let currentInvoiceNum = localStorage.getItem('invoiceNum') || 1001;
-document.getElementById('inv-id').innerText = currentInvoiceNum;
-
 document.getElementById('current-date').innerText = new Date().toLocaleDateString('ar-EG');
 
 var counter = 1;
@@ -167,6 +163,7 @@ var counter = 1;
 function addRow(){
     var code = document.getElementById("code").value.trim();
     var qty = document.getElementById("qty").value.trim();
+    var discount = document.getElementById("discount").value.trim() || "0";
 
     if(code === "" || qty === ""){
         alert("يرجى إدخال الكود والكمية");
@@ -178,6 +175,7 @@ function addRow(){
         "<td>" + counter + "</td>" +
         "<td>" + code + "</td>" +
         "<td>" + qty + "</td>" +
+        "<td>" + discount + "</td>" +
         "<td class='action-col'>" +
             "<button class='btn-edit' onclick='editRow(this)'>✏️</button> " +
             "<button class='btn-del' onclick='this.parentElement.parentElement.remove()'>✖</button>" +
@@ -187,14 +185,18 @@ function addRow(){
     counter++;
     document.getElementById("code").value = "";
     document.getElementById("qty").value = "";
+    document.getElementById("discount").value = "";
 }
 
 function editRow(btn){
     var tr = btn.parentElement.parentElement;
     var newCode = prompt("تعديل الكود:", tr.children[1].innerText);
     var newQty = prompt("تعديل الكمية:", tr.children[2].innerText);
-    if(newCode) tr.children[1].innerText = newCode;
-    if(newQty) tr.children[2].innerText = newQty;
+    var newDisc = prompt("تعديل الداشكاندن:", tr.children[3].innerText);
+    
+    if(newCode !== null) tr.children[1].innerText = newCode;
+    if(newQty !== null) tr.children[2].innerText = newQty;
+    if(newDisc !== null) tr.children[3].innerText = newDisc;
 }
 
 function makePDF(){
@@ -208,21 +210,15 @@ function makePDF(){
     
     html2pdf().set({
         margin: 0.5,
-        filename: 'طلب_رقم_' + currentInvoiceNum + '_' + cname + '.pdf',
+        filename: 'طلب_' + cname + '.pdf',
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2 },
         jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     }).from(element).save().then(() => {
         document.getElementById('input-area').classList.remove('no-print');
         document.querySelectorAll('.action-col').forEach(el => el.classList.remove('no-print'));
-        
-        // زيادة رقم الفاتورة وحفظه
-        currentInvoiceNum++;
-        localStorage.setItem('invoiceNum', currentInvoiceNum);
-        document.getElementById('inv-id').innerText = currentInvoiceNum;
     });
 }
-
 
 function resetForm() {
     if(confirm("هل أنت متأكد من مسح جميع البيانات؟")) {
